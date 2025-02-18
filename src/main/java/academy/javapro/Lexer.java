@@ -1,7 +1,9 @@
 package academy.javapro;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Lexer {
     private static final Pattern[] PATTERNS = {
@@ -36,6 +38,9 @@ public class Lexer {
      */
     public Lexer(String input) {
         // Your code here
+        this.input = input;
+        this.tokens = new ArrayList<>();
+        this.position = 0;
     }
 
     /**
@@ -54,6 +59,27 @@ public class Lexer {
      */
     public void tokenize() {
         // Your code here
+        while (position < input.length()) {
+            String remainingInput = input.substring(position);
+            boolean matched = false;
+
+            for (int i = 0; i < PATTERNS.length; i++) {
+                Matcher matcher = PATTERNS[i].matcher(remainingInput);
+                if (matcher.lookingAt()) {
+                    String tokenValue = matcher.group();
+                    if (!TYPES[i].equals("WHITESPACE")) {
+                        tokens.add(new String[]{TYPES[i], tokenValue});
+                    }
+                    position += tokenValue.length();
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+                throw new RuntimeException("Unexpected character at position: " + position);
+            }
+        }
     }
 
     /**
@@ -67,7 +93,7 @@ public class Lexer {
      */
     public List<String[]> getTokens() {
         // Your code here
-        return null;
+        return tokens;
     }
 
     public static void main(String[] args) {
